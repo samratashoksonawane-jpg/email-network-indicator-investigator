@@ -22,3 +22,48 @@ I separated parsing from presentation, preserved raw Received evidence, added ex
 - What I observed in the capture:
 - One issue encountered and how I diagnosed it:
 - Screenshot or terminal evidence saved:
+
+# Learning Journal — Wireshark Investigation
+
+## Concepts Learned
+
+### 1. Packet Analysis
+I learned how Wireshark captures and displays network packets and how to inspect individual packets.
+
+### 2. Display Filters
+I learned to use Wireshark display filters such as `dns`, `mdns`, and `nbns` to isolate specific protocols.
+
+### 3. DNS Queries
+I learned that an A record query requests the IPv4 address associated with a hostname.
+
+### 4. Multicast DNS
+I learned that mDNS uses UDP port 5353 and the IPv4 multicast address 224.0.0.251 for local network name resolution.
+
+### 5. DNS Responses
+I learned how to associate a DNS query with its response and inspect returned resource records.
+
+### 6. Network Protocol Differences
+I learned that NBNS and DNS are different protocols. NBNS commonly uses UDP port 137, while standard DNS commonly uses port 53.
+
+## Mistake / Failure and Diagnosis
+
+Initially, I selected an mDNS-related sample capture expecting standard DNS traffic. However, applying the `dns` display filter produced no packets.
+
+I investigated further using the `nbns` and `mdns` filters. This helped me identify the protocols actually present in the capture.
+
+I then located an mDNS query in packet 21 and its corresponding response in packet 25.
+
+## What I Changed
+
+I stopped assuming that every name-resolution packet was standard DNS. I used protocol-specific display filters and inspected packet details before recording conclusions.
+
+## Limitations
+
+The experiment used an offline sample capture. Its results do not establish real-world malicious activity or identify an actual attacker.
+
+## Future Improvements
+
+- Practise with a standard DNS capture containing queries and responses.
+- Explore additional DNS record types such as MX, TXT and AAAA.
+- Improve understanding of packet routing and authentication.
+- Compare packet-level findings with the email header investigation tool.
