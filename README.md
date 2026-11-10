@@ -8,8 +8,8 @@ A small defensive, offline tool for parsing supplied synthetic email headers (`.
 
 ## Setup
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd email-network-investigator
+git clone https://github.com/samratashoksonawane-jpg/email-network-indicator-investigator.git
+cd email-network-indicator-investigator
 python -m unittest discover -s tests -v
 ```
 
