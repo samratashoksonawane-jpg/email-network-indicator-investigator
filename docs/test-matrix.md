@@ -15,3 +15,19 @@ Tested using Python's built-in `unittest` framework. Execute with `python -m uni
 
 ## Result recording
 Run the command above on the machine used for submission and retain the terminal output or screenshot. The automated tests validate parser behaviour; they do not validate real-world attribution or security outcomes.
+
+## Additional Manual Testing — Wireshark
+
+| Test ID | Test Description | Expected Result | Actual Result | Status | Evidence |
+|---|---|---|---|---|---|
+| W01 | Apply `nbns` display filter | Show NBNS packets | NBNS packets displayed | PASS | NBNS screenshot |
+| W02 | Apply `dns` display filter | Show standard DNS packets if present | No packets displayed in selected capture | PASS | DNS filter screenshot |
+| W03 | Apply `mdns` display filter | Show mDNS packets | mDNS packets displayed | PASS | mDNS query screenshot |
+| W04 | Inspect mDNS query packet 21 | Identify query name and record type | m1.local, A record, IN class | PASS | evidence-01-mdns-query.png |
+| W05 | Inspect mDNS response packet 25 | Identify matching response and IPv4 address | m1.local resolved to 111.111.111.111 | PASS | evidence-02-mdns-response.png |
+
+### Testing Notes
+
+The DNS filter test confirmed that the selected capture did not contain standard DNS packets. This was recorded as an expected observation rather than an application failure.
+
+The Wireshark tests were performed manually using an offline sample capture. They are separate from the automated Python unit tests.
