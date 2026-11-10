@@ -83,3 +83,49 @@ Potential extensions include `.eml` upload in a graphical interface, a validated
 
 ## 12. Conclusion
 The project provides a small, reproducible way to structure supplied email and DNS evidence. Its value is transparent parsing and careful interpretation, not automated threat verdicts. Further packet-level integration should be added only with a documented sample capture and repeatable offline procedure.
+
+## Wireshark Practical Experiment: mDNS Analysis
+
+### Objective
+To inspect DNS-related network traffic using Wireshark and understand how multicast DNS queries and responses work.
+
+### Tools Used
+- Wireshark 4.6.9
+- Npcap 1.88
+- Official Wireshark sample capture: mDNS3.cap
+
+### Display Filters
+- `nbns` — to inspect NetBIOS Name Service traffic.
+- `mdns` — to inspect multicast DNS traffic.
+- `dns` — tested, but no packets were displayed with this filter in the selected capture.
+
+### Experiment Results
+
+**1. NBNS inspection**
+
+Observed UDP traffic using port 137. The capture showed NetBIOS name queries sent to a broadcast destination.
+
+**2. mDNS query — Packet 21**
+
+- Query name: m1.local
+- Query type: A
+- Query class: IN
+- Questions: 1
+- Answer records: 0
+- Destination: 224.0.0.251
+- UDP destination port: 5353
+
+**3. mDNS response — Packet 25**
+
+- Response name: m1.local
+- Record type: A
+- Returned IPv4 address: 111.111.111.111
+- Answer records: 1
+- Response status: No error
+- Response time: 1.220139 seconds
+
+### Conclusion
+
+The experiment demonstrated how Wireshark can inspect multicast DNS traffic, identify DNS queries, and associate responses with their corresponding requests. It also demonstrated the use of display filters to isolate network protocols.
+
+The sample contains synthetic/documentation-style addresses and should not be treated as evidence of malicious activity or a real-world host.
