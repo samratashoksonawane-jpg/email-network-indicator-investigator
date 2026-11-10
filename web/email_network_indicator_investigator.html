@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email & Network Indicator Investigator</title>
+<style>
+:root{font-family:Inter,system-ui,Segoe UI,sans-serif;color:#e8edf5;background:#0b1220}*{box-sizing:border-box}body{margin:0;padding:28px;max-width:1200px;margin:auto}h1{margin:0 0 8px;font-size:clamp(25px,4vw,36px)}p{color:#aab7c9;line-height:1.55}.sub{margin:0 0 22px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:#121d30;border:1px solid #293950;border-radius:14px;padding:18px;margin-bottom:16px}label{display:block;font-weight:650;margin:12px 0 7px}textarea,input{width:100%;background:#091321;color:#e8edf5;border:1px solid #34465f;border-radius:9px;padding:12px;font:13px ui-monospace,monospace;min-height:150px;resize:vertical}input{min-height:auto}button{border:0;border-radius:9px;padding:11px 15px;font-weight:700;cursor:pointer;margin:8px 7px 0 0;background:#78a9ff;color:#081426}button.secondary{background:#263a55;color:#e8edf5}button:focus,textarea:focus{outline:2px solid #78a9ff;outline-offset:2px}.results{display:none}.pill{display:inline-block;border-radius:30px;padding:4px 9px;font-size:12px;background:#263a55;color:#cfe0ff;margin:3px}.warn{color:#ffd18b}.good{color:#9fe2b3}.bad{color:#ffaaa8}.item{border-top:1px solid #293950;padding:12px 0}.item:first-child{border:0}.muted{color:#91a2b8;font-size:13px}.mono{font:13px ui-monospace,monospace;overflow-wrap:anywhere}.kvs{display:grid;grid-template-columns:170px 1fr;gap:8px;font-size:14px}.kvs div{padding:5px 0;border-bottom:1px solid #25344a}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#091321;padding:14px;border-radius:9px;color:#d8e4f5}.foot{font-size:12px;color:#91a2b8}.actions{display:flex;flex-wrap:wrap;gap:4px}@media(max-width:760px){body{padding:15px}.grid{grid-template-columns:1fr}.kvs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<h1>Email & Network Indicator Investigator</h1>
+<p class="sub">Offline, defensive triage for synthetic email headers and supplied indicators. Parses evidence locally in this browser; it does not contact DNS, mail servers, or threat-intelligence services.</p>
+<div class="grid">
+<section class="panel">
+<h2>1. Email headers</h2>
+<p class="muted">Paste raw headers. Received fields are displayed in the order supplied; the tool does not assume they are trustworthy.</p>
+<textarea id="headers" spellcheck="false" placeholder="From: Billing Team <notice@example.test>
+Reply-To: help@example.test
+Return-Path: <bounce@example.test>
+Message-ID: <abc123@mail.example.test>
+Authentication-Results: mx.example.test; spf=pass; dkim=pass; dmarc=fail
+Received: from relay.example.test (relay.example.test [192.0.2.25]) by mx.example.test; Tue, 10 Nov 2026 10:00:00 +0000"></textarea>
+</section>
+<section class="panel">
+<h2>2. Supplied DNS / indicators</h2>
+<p class="muted">Paste records or indicators gathered separately. No lookups are performed.</p>
+<textarea id="dns" spellcheck="false" placeholder="example.test A 192.0.2.10
+example.test MX 10 mail.example.test
+example.test TXT v=spf1 include:mail.example.test -all
+mail.example.test AAAA 2001:db8::10"></textarea>
+<label for="notes">Analyst notes (optional)</label>
+<textarea id="notes" style="min-height:80px" placeholder="Where the sample came from, test assumptions, context..."></textarea>
+</section>
+</div>
+<div class="panel">
+<div class="actions">
+<button id="analyze">Analyze supplied evidence</button><button class="secondary" id="sample">Load synthetic sample</button><button class="secondary" id="clear">Clear</button>
+</div>
+<p class="foot">Use reserved example domains and documentation IP ranges for practice. Do not paste confidential messages or real personal data.</p>
+</div>
+<section class="panel results" id="results">
+<h2>Investigation report</h2><div id="summary"></div>
+<div class="item"><h3>Sender and identity fields</h3><div id="identity" class="kvs"></div></div>
+<div class="item"><h3>Authentication observations</h3><div id="auth"></div></div>
+<div class="item"><h3>Routing clues (Received fields)</h3><div id="routing"></div></div>
+<div class="item"><h3>Supplied DNS / indicators</h3><div id="dnsout"></div></div>
+<div class="item"><h3>Potential security relevance</h3><div id="security"></div></div>
+<div class="item"><h3>Analyst notes and limitations</h3><div id="limitations"></div></div>
+<div class="actions"><button id="download">Download report (.txt)</button><button class="secondary" id="copy">Copy report</button></div>
+</section>
+<section class="panel">
+<h2>Method and interpretation</h2>
+<ul class="muted">
+<li>Header values are untrusted input. A sender can forge many visible fields; trusted receiving infrastructure and raw message context matter.</li>
+<li>SPF, DKIM and DMARC results are reported as written in supplied headers, not independently validated.</li>
+<li>Received headers are normally prepended by receiving systems. The earliest visible hop is not automatically the true origin; trust boundaries must be established.</li>
+<li>DNS records are only parsed from the supplied text. A missing record in this input does not mean the record does not exist.</li>
+<li>ATT&CK references are behavioural context, not proof that an intrusion occurred.</li>
+</ul>
+</section>
+<section class="panel">
+<h2>References</h2>
+<p class="muted">Wireshark User’s Guide and display filters: <a href="https://www.wireshark.org/docs/" target="_blank" rel="noopener">wireshark.org/docs</a><br>
+Wireshark sample captures: <a href="https://wiki.wireshark.org/SampleCaptures" target="_blank" rel="noopener">wiki.wireshark.org/SampleCaptures</a><br>
+Scapy documentation: <a href="https://scapy.readthedocs.io/en/latest/" target="_blank" rel="noopener">scapy.readthedocs.io</a><br>
+MITRE ATT&CK: <a href="https://attack.mitre.org/" target="_blank" rel="noopener">attack.mitre.org</a><br>
+Email format background (RFC 5322): <a href="https://www.rfc-editor.org/rfc/rfc5322" target="_blank" rel="noopener">rfc-editor.org/rfc/rfc5322</a><br>
+SPF (RFC 7208): <a href="https://www.rfc-editor.org/rfc/rfc7208" target="_blank" rel="noopener">rfc-editor.org/rfc/rfc7208</a>; DMARC (RFC 7489): <a href="https://www.rfc-editor.org/rfc/rfc7489" target="_blank" rel="noopener">rfc-editor.org/rfc/rfc7489</a></p>
+</section>
+<script>
+const $=id=>document.getElementById(id);
+let latest='';
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function uniq(a){return [...new Set(a.filter(Boolean))];}
+function domains(s){return uniq((s.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi)||[]).map(x=>x.split('@').pop().toLowerCase()));}
+function ips(s){return uniq(s.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b|\b(?:[A-F0-9]{0,4}:){2,7}[A-F0-9]{0,4}\b/gi)||[]);}
+function lineVal(lines,name){const x=lines.filter(l=>new RegExp('^'+name+':','i').test(l));return x.length?x.join('\n'):'Not supplied';}
+function classifyAuth(s){const m=[...s.matchAll(/\b(spf|dkim|dmarc)\s*=\s*(pass|fail|softfail|neutral|none|temperror|permerror)/gi)];return m.map(x=>({type:x[1].toUpperCase(),value:x[2].toLowerCase()}));}
+function analyze(){
+ const raw=$('headers').value.trim(), dns=$('dns').value.trim(), notes=$('notes').value.trim();
+ const lines=raw.split(/\r?\n/), from=lineVal(lines,'From'), reply=lineVal(lines,'Reply-To'), ret=lineVal(lines,'Return-Path'), mid=lineVal(lines,'Message-ID');
+ const authLines=lines.filter(l=>/^(Authentication-Results|Received-SPF):/i.test(l));
+ const received=lines.filter(l=>/^Received:/i.test(l));
+ const senderDomains=domains([from,reply,ret,mid].join('\n'));
+ const allIps=ips(received.join('\n'));
+ const auth=classifyAuth(authLines.join('\n'));
+ const dnsLines=dns?dns.split(/\r?\n/).filter(Boolean):[];
+ const records=dnsLines.map(l=>{const m=l.trim().match(/^(\S+)\s+(A|AAAA|MX|TXT|NS|PTR|CNAME)\s+(.+)$/i);return m?{host:m[1],type:m[2].toUpperCase(),value:m[3]}:{host:'Unparsed input',type:'INDICATOR',value:l};});
+ const flags=[];
+ if(reply!=='Not supplied'&&domains(reply).some(d=>!senderDomains.includes(d)))flags.push('Reply-To domain differs from the other extracted sender domains. This can be legitimate, but warrants checking against expected business workflows.');
+ if(ret!=='Not supplied'&&domains(ret).some(d=>!senderDomains.includes(d)))flags.push('Return-Path domain differs from another sender domain. Mailing services and bounce handling can explain this; compare with known infrastructure.');
+ if(auth.some(a=>a.value==='fail'))flags.push('At least one supplied SPF, DKIM or DMARC result is marked fail. Confirm which domain was evaluated and inspect the receiving system’s Authentication-Results trustworthiness.');
+ if(auth.some(a=>['temperror','permerror'].includes(a.value)))flags.push('An authentication evaluation reports a temporary or permanent error. This is not equivalent to a confirmed spoof.');
+ if(received.length===0)flags.push('No Received fields were supplied, so routing reconstruction is unavailable.');
+ if(!raw)flags.push('No email headers supplied.');
+ if(!dnsLines.length)flags.push('No DNS records or indicators supplied. No DNS lookup was attempted.');
+ if(!auth.length)flags.push('No parseable SPF/DKIM/DMARC result supplied.');
+ const identity=[['From',from],['Reply-To',reply],['Return-Path',ret],['Message-ID',mid],['Extracted sender domains',senderDomains.join(', ')||'None extracted']];
+ $('identity').innerHTML=identity.map(([k,v])=>`<div class="muted">${esc(k)}</div><div class="mono">${esc(v)}</div>`).join('');
+ $('auth').innerHTML=auth.length?auth.map(a=>`<span class="pill">${esc(a.type)}: ${esc(a.value)}</span>`).join('')+`<p class="muted">Copied from supplied header text; not independently authenticated.</p>`:'<p class="muted">No parseable authentication results found.</p>';
+ $('routing').innerHTML=received.length?received.map((r,i)=>`<div class="item"><b>Received field ${i+1} (input order)</b><div class="mono">${esc(r)}</div><div class="muted">IP clues: ${esc(ips(r).join(', ')||'None parsed')}</div></div>`).join(''):`<p class="muted">No Received fields supplied.</p>`;
+ $('dnsout').innerHTML=records.length?records.map(r=>`<div class="item"><span class="pill">${esc(r.type)}</span> <b>${esc(r.host)}</b><div class="mono">${esc(r.value)}</div></div>`).join(''):'<p class="muted">No DNS input.</p>';
+ const sec=flags.length?flags.map(f=>`<div class="item warn">• ${esc(f)}</div>`).join(''):'<p class="good">No obvious inconsistency was identified by these basic checks. This does not establish that the message is safe.</p>';
+ $('security').innerHTML=sec+`<p class="muted">Possible ATT&CK research context: phishing-related behaviours may be explored under <a href="https://attack.mitre.org/techniques/T1566/" target="_blank" rel="noopener">T1566 – Phishing</a> only if independent evidence supports that behaviour. Do not assign a technique from a header anomaly alone.</p>`;
+ $('limitations').innerHTML=`<p>${esc(notes||'No analyst notes supplied.')}</p><ul class="muted"><li>Analysis is deterministic text parsing, not reputation scoring or forensic attribution.</li><li>Header ordering and values may be incomplete, altered, or forged.</li><li>Private, reserved, or documentation IP ranges should not be treated as attacker infrastructure.</li><li>Correlate with full message body, trusted gateway logs, DNS observations at the relevant time, and packet captures where authorised.</li></ul>`;
+ const report=`EMAIL & NETWORK INDICATOR INVESTIGATION REPORT\nGenerated locally: ${new Date().toISOString()}\n\nIDENTITY\n${identity.map(x=>x.join(': ')).join('\n')}\n\nAUTHENTICATION\n${auth.map(a=>a.type+': '+a.value).join('\n')||'No parseable results'}\n\nROUTING (input order)\n${received.join('\n')||'No Received fields'}\n\nSUPPLIED DNS / INDICATORS\n${records.map(r=>`${r.host} ${r.type} ${r.value}`).join('\n')||'None'}\n\nOBSERVATIONS / LIMITATIONS\n${flags.join('\n')||'No basic inconsistency identified; this does not prove safety.'}\nAnalyst notes: ${notes||'None'}\n\nCAUTION: Observations are not proof of maliciousness or attribution. DNS was not queried; authentication was not independently verified.`;
+ latest=report;$('summary').innerHTML=`<span class="pill">${received.length} Received field(s)</span><span class="pill">${auth.length} auth result(s)</span><span class="pill">${records.length} supplied record(s)</span><p class="muted">Parsed ${senderDomains.length} sender-related domain(s) and ${allIps.length} routing IP clue(s). Results describe only the supplied text.</p>`;
+ $('results').style.display='block';$('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('analyze').onclick=analyze;
+$('sample').onclick=()=>{$('headers').value=`From: "Account Support" <alert@accounts-example.test>
+Reply-To: support-desk@external-example.test
+Return-Path: <bounce@mailer-example.test>
+Message-ID: <lab-001@mailer-example.test>
+Authentication-Results: mx.receiver.test; spf=pass; dkim=pass; dmarc=fail
+Received: from outbound.mailer-example.test (outbound.mailer-example.test [192.0.2.44]) by mx.receiver.test; Tue, 10 Nov 2026 10:00:00 +0000
+Received: from submission.example.test (submission.example.test [198.51.100.23]) by outbound.mailer-example.test; Tue, 10 Nov 2026 09:59:00 +0000`;$('dns').value=`accounts-example.test A 192.0.2.80
+accounts-example.test MX 10 mx.accounts-example.test
+accounts-example.test TXT v=spf1 include:mailer-example.test -all
+mailer-example.test A 198.51.100.44
+external-example.test MX 10 mx.external-example.test`;$('notes').value='Synthetic classroom example. All domains use the reserved .test namespace and IPs are documentation ranges.';};
+$('clear').onclick=()=>{$('headers').value='';$('dns').value='';$('notes').value='';$('results').style.display='none';latest='';};
+$('download').onclick=()=>{const b=new Blob([latest],{type:'text/plain'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='investigation-report.txt';a.click();URL.revokeObjectURL(a.href);};
+$('copy').onclick=async()=>{try{await navigator.clipboard.writeText(latest);$('copy').textContent='Copied';}catch(e){$('copy').textContent='Copy unavailable';}};
+</script>
+</body></html>

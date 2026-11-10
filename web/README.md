@@ -1,0 +1,1 @@
+The first browser demonstration HTML file is provided separately as `email_network_indicator_investigator.html`. The Python CLI in `src/` is the reproducible, tested reference implementation for this repository.

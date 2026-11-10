@@ -1,0 +1,6 @@
+# Synthetic DNS observations; not live DNS answers
+accounts-example.test A 192.0.2.80
+accounts-example.test MX 10 mx.accounts-example.test
+accounts-example.test TXT v=spf1 include:mailer-example.test -all
+mailer-example.test A 198.51.100.44
+external-example.test MX 10 mx.external-example.test

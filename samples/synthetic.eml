@@ -1,0 +1,13 @@
+From: "Account Support" <alert@accounts-example.test>
+Reply-To: support-desk@external-example.test
+Return-Path: <bounce@mailer-example.test>
+Message-ID: <lab-001@mailer-example.test>
+Date: Tue, 10 Nov 2026 10:00:00 +0000
+Subject: Synthetic classroom test message
+Authentication-Results: mx.receiver.test; spf=pass; dkim=pass; dmarc=fail
+Received: from outbound.mailer-example.test (outbound.mailer-example.test [192.0.2.44]) by mx.receiver.test; Tue, 10 Nov 2026 10:00:00 +0000
+Received: from submission.example.test (submission.example.test [198.51.100.23]) by outbound.mailer-example.test; Tue, 10 Nov 2026 09:59:00 +0000
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+This is synthetic training content. Do not reply.

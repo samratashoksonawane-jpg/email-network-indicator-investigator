@@ -1,0 +1,104 @@
+{
+  "fields": {
+    "From": "Account Support <alert@accounts-example.test>",
+    "Reply-To": "support-desk@external-example.test",
+    "Return-Path": "<bounce@mailer-example.test>",
+    "Message-ID": "<lab-001@mailer-example.test>",
+    "Date": "Tue, 10 Nov 2026 10:00:00 +0000",
+    "Subject": "Synthetic classroom test message"
+  },
+  "sender_domains": {
+    "From": [
+      "accounts-example.test"
+    ],
+    "Reply-To": [
+      "external-example.test"
+    ],
+    "Return-Path": [
+      "mailer-example.test"
+    ],
+    "Message-ID": [
+      "mailer-example.test"
+    ]
+  },
+  "authentication": [
+    {
+      "mechanism": "SPF",
+      "result": "pass",
+      "source": "mx.receiver.test; spf=pass; dkim=pass; dmarc=fail"
+    },
+    {
+      "mechanism": "DKIM",
+      "result": "pass",
+      "source": "mx.receiver.test; spf=pass; dkim=pass; dmarc=fail"
+    },
+    {
+      "mechanism": "DMARC",
+      "result": "fail",
+      "source": "mx.receiver.test; spf=pass; dkim=pass; dmarc=fail"
+    }
+  ],
+  "received": [
+    {
+      "input_order": 1,
+      "header": "from outbound.mailer-example.test (outbound.mailer-example.test [192.0.2.44]) by mx.receiver.test; Tue, 10 Nov 2026 10:00:00 +0000",
+      "ip_addresses": [
+        "192.0.2.44"
+      ]
+    },
+    {
+      "input_order": 2,
+      "header": "from submission.example.test (submission.example.test [198.51.100.23]) by outbound.mailer-example.test; Tue, 10 Nov 2026 09:59:00 +0000",
+      "ip_addresses": [
+        "198.51.100.23"
+      ]
+    }
+  ],
+  "dns_records": [
+    {
+      "line": 2,
+      "name": "accounts-example.test",
+      "type": "A",
+      "value": "192.0.2.80"
+    },
+    {
+      "line": 3,
+      "name": "accounts-example.test",
+      "type": "MX",
+      "value": "10 mx.accounts-example.test"
+    },
+    {
+      "line": 4,
+      "name": "accounts-example.test",
+      "type": "TXT",
+      "value": "v=spf1 include:mailer-example.test -all"
+    },
+    {
+      "line": 5,
+      "name": "mailer-example.test",
+      "type": "A",
+      "value": "198.51.100.44"
+    },
+    {
+      "line": 6,
+      "name": "external-example.test",
+      "type": "MX",
+      "value": "10 mx.external-example.test"
+    }
+  ],
+  "dns_warnings": [],
+  "observations": [
+    "Reply-To domain differs from the From domain. This can be legitimate; verify expected mail-flow arrangements.",
+    "Return-Path domain differs from the From domain. This can be legitimate; verify expected mail-flow arrangements.",
+    "At least one supplied authentication result is fail. Confirm the evaluated domain and whether the Authentication-Results header is from a trusted receiver."
+  ],
+  "analyst_notes": "",
+  "limitations": [
+    "Header values are supplied evidence and may be forged, altered, or incomplete.",
+    "Authentication results are copied from the message; they are not independently verified.",
+    "Received fields are shown in input order. Establish trusted relay boundaries before inferring origin.",
+    "DNS data is parsed only from supplied text; absence here does not prove a record is absent.",
+    "Reserved/documentation IP addresses are not evidence of attacker infrastructure."
+  ],
+  "verdict": "Review the observations. They are leads for investigation, not proof of maliciousness."
+}
