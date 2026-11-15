@@ -55,3 +55,13 @@ Only use synthetic data or captures you are authorised to inspect. Use Wireshark
 
 ## License
 MIT. See `LICENSE`.
+
+## Demonstration Video
+
+Watch the complete project demonstration here:
+
+[Email & Network Indicator Investigation Helper – Demo Video]## Demonstration Video
+
+Watch the complete project demonstration here:
+
+[Email & Network Indicator Investigation Helper – Demo Video]https://drive.google.com/file/d/14FInciE8c6ZzXHRh3k0Fay2kYUJrLgjj/view?usp=sharing
